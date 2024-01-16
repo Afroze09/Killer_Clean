@@ -26,9 +26,9 @@ import { loadStripe } from "@stripe/stripe-js";
 
 export default function BookForm() {
   const [selectedFrequency, setSelectedFrequency] = useState("Weekly");
-  const [selectedBedrooms, setSelectedBedrooms] = useState(0);
-  const [selectedBathrooms, setSelectedBathrooms] = useState(1);
-  const [selectedSqft, setSelectedSqft] = useState("");
+  // const [selectedBedrooms, setSelectedBedrooms] = useState(0);
+  // const [selectedBathrooms, setSelectedBathrooms] = useState(1);
+  // const [selectedSqft, setSelectedSqft] = useState("");
   const [selectedExtras, setSelectedExtras] = useState([]);
   const [selectedKey, setSelectedKey] = useState(""); // State for radio buttons
   const [keepKeyChecked, setKeepKeyChecked] = useState(false); // State for checkbox
@@ -41,11 +41,11 @@ export default function BookForm() {
   const [showDatePicker, setShowDatePicker] = useState(true);
   const [showTimePicker, setShowTimePicker] = useState(false);
 
-  // const [bedroomValue, setBedroomValue] = useState("");
-  // const [bathroomValue, setBathroomValue] = useState("");
-  // const [totalCost, setTotalCost] = useState(null);
-  // const [pricingStandard, setPricingStandard] = useState("standard");
-  // const [availableBathrooms, setAvailableBathrooms] = useState(["1", "2"]);
+  const [bedroomValue, setBedroomValue] = useState("");
+  const [bathroomValue, setBathroomValue] = useState("");
+  const [totalCost, setTotalCost] = useState(0);
+  const [availableBathrooms, setAvailableBathrooms] = useState(["1", "2"]);
+  const [pricingStandard, setPricingStandard] = useState("standard");
 
   const handleChange = (field, value) => {
     setFormData({
@@ -58,76 +58,71 @@ export default function BookForm() {
     }));
   };
 
-  // useEffect(() => {
-  //   // Update available bathrooms based on selected bedrooms
-  //   updateAvailableBathrooms();
-  // }, [bedroomValue, pricingStandard]);
+  useEffect(() => {
+    // Update available bathrooms based on selected bedrooms
+    updateAvailableBathrooms();
+  }, [bedroomValue, pricingStandard]);
 
-  // const updateAvailableBathrooms = () => {
-  //   const selectedPricing = pricingConfig[pricingStandard];
-  //   const bedrooms = parseInt(bedroomValue);
+  const updateAvailableBathrooms = () => {
+    const selectedPricing = pricingConfig[pricingStandard];
+    const bedrooms = parseInt(bedroomValue);
 
-  //   if (selectedPricing && selectedPricing[bedrooms]) {
-  //     const bathrooms = Object.keys(selectedPricing[bedrooms]);
-  //     setAvailableBathrooms(bathrooms);
-  //   } else {
-  //     setAvailableBathrooms([]);
-  //   }
-  // };
+    if (selectedPricing && selectedPricing[bedrooms]) {
+        const bathrooms = Object.keys(selectedPricing[bedrooms]);
+        setAvailableBathrooms(bathrooms);
+    } else {
+        setAvailableBathrooms([]);
+    }
+};
 
-  // Define your pricing logic
-  const calculatePrice = useCallback(() => {
+
+  const calculateTotalCost = useCallback(() => {
     const freqPrice = pricingConfig.frequency[selectedFrequency] || 0;
-    const bedroomsPrice = selectedBedrooms * pricingConfig.bedrooms;
-    const bathroomsPrice = selectedBathrooms * pricingConfig.bathrooms;
-    const sqftPrice = pricingConfig.sqft[selectedSqft] || 0;
-    const extrasPrice = selectedExtras.length * pricingConfig.extras;
-
     const selectedPricing = pricingConfig[pricingStandard];
     const bedrooms = parseInt(bedroomValue);
     const bathrooms = parseInt(bathroomValue);
+    const extrasPrice = selectedExtras.length * pricingConfig.extras;
 
-    if (
-      selectedPricing &&
-      selectedPricing[bedrooms] &&
-      selectedPricing[bedrooms][bathrooms]
-    ) {
-      setTotalCost(selectedPricing[bedrooms][bathrooms]);
+    if (selectedPricing?.[bedrooms]?.[bathrooms]) {
+      console.log (selectedPricing[bedrooms][bathrooms]);
     } else {
-      setTotalCost(null);
+      setTotalCost(0);
     }
 
     const subtotal =
-      freqPrice + bedroomsPrice + bathroomsPrice + sqftPrice + extrasPrice;
+      freqPrice + bedrooms + bathrooms+ extrasPrice;
 
-    // Assuming taxRate is your tax rate (e.g., 10%)
-    const taxRate = 0.1;
-    const taxAmount = subtotal * taxRate;
-    const totalPrice = subtotal + taxAmount;
-    setPrice(totalPrice);
-    setTaxAmount(taxAmount);
-  }, [
+      const taxRate = 0.1;
+      const taxAmount = subtotal * taxRate;
+      const totalPrice = subtotal + taxAmount;
+      setPrice(totalPrice);
+      setTaxAmount(taxAmount);
+  },
+  [
     selectedFrequency,
-    selectedBedrooms,
-    selectedBathrooms,
-    selectedSqft,
+    bedroomValue,
+    bathroomValue,
+    // selectedSqft,
     selectedExtras,
   ]);
 
   // Update the price whenever the selected options change
-  useEffect(() => {
-    calculatePrice();
-  }, [calculatePrice]);
+  // useEffect(() => {
+  //   calculatePrice();
+  // }, [calculatePrice]);
 
-  // Update the state when user makes selections
+
+
+  const handleFrequencyChange = (event) => {
+    setSelectedFrequency(event.target.value);
+  };
 
   const handleBedroomChange = (event) => {
     setBedroomValue(event.target.value);
   };
-
+  
   const handleBathroomChange = (event) => {
     setBathroomValue(event.target.value);
-    
   };
 
   const handleStandardClick = () => {
@@ -138,28 +133,6 @@ export default function BookForm() {
     setPricingStandard("deep");
   };
 
-  useEffect(() => {
-    // Calculate and set the total cost whenever the pricing standard changes
-    calculateTotalCost();
-  }, [pricingStandard, bedroomValue, bathroomValue]);
-
-
-  const handleFrequencyChange = (event) => {
-    setSelectedFrequency(event.target.value);
-  };
-
-  const handleBedroomsChange = (event) => {
-    setSelectedBedrooms(parseInt(event.target.value));
-  };
-
-  const handleBathroomsChange = (event) => {
-    setSelectedBathrooms(parseInt(event.target.value));
-  };
-
-  const handleSqftChange = (event) => {
-    setSelectedSqft(event.target.value);
-  };
-
   const handleExtrasChange = (event) => {
     const extra = event.target.value;
     setSelectedExtras((prevExtras) =>
@@ -168,6 +141,10 @@ export default function BookForm() {
         : [...prevExtras, extra]
     );
   };
+  useEffect(() => {
+    // Calculate and set the total cost whenever the pricing standard changes
+    calculateTotalCost();
+  }, [ selectedFrequency,pricingStandard, bedroomValue, bathroomValue]);
 
   const handleRadioChange = (event) => {
     setSelectedKey(event.target.id);
@@ -189,9 +166,10 @@ export default function BookForm() {
     setShowTimePicker(false);
   };
   const handleFormSubmit = () => {
-    console.log("first")
+    console.log("first");
     let newErrors = {};
 
+  
     // Perform validation
     customerDetailsData.forEach((detail) => {
       if (detail.required && !formData[detail.id]) {
@@ -208,12 +186,13 @@ export default function BookForm() {
       return;
     }
 
+  
     console.log(formData);
     localStorage.setItem("formData", JSON.stringify(formData));
     localStorage.setItem("selectedFrequency", selectedFrequency);
-    localStorage.setItem("selectedBedrooms", selectedBedrooms);
-    localStorage.setItem("selectedBathrooms", selectedBathrooms);
-    localStorage.setItem("selectedSqft", selectedSqft);
+    localStorage.setItem("bedromvalues", bedroomValue);
+    localStorage.setItem("bathroomvalues", bathroomValue);
+    // localStorage.setItem("selectedSqft", selectedSqft);
     localStorage.setItem("selectedExtras", selectedExtras);
     localStorage.setItem("selectedDate", selectedDate);
     localStorage.setItem("selectedTime", selectedTime);
@@ -228,9 +207,8 @@ export default function BookForm() {
       {
         Name: formData.firstName + " " + formData.lastName,
         Frequency: selectedFrequency,
-        Bathrooms: selectedBathrooms,
-        Bedrooms: selectedBedrooms,
-        Sqft: selectedSqft,
+        bedrooms:bedroomValue,
+        bathrooms: bathroomValue,
         Extras: selectedExtras,
         price: price,
         Email: formData.email,
@@ -257,7 +235,6 @@ export default function BookForm() {
       console.log(result.error);
     }
   };
-  
 
   return (
     <div className="flex flex-col lg:flex-row items-center py-14 lg:items-start justify-evenly px-2 lg:px-10 w-full">
@@ -304,14 +281,11 @@ export default function BookForm() {
             </div>
           </div>
           {/* Service Type section */}
-          <div className="border-b w-full py-4 lg:p-4">
+          {/* <div className="border-b w-full py-4 lg:p-4">
             <h1 className="text-[#11263c] max-xxl:text-2xl xxl:text-6xl font-semibold mb-4">
               Service Type
             </h1>
-            <div className="pl-2  space-x-5 rounded-2xl">
-              <button className="w-20 h-10 bg-gray-300" onClick={handleStandardClick}>Standard</button>
-              <button className="w-20 h-10 bg-gray-300" onClick={handleDeepClick}>Deep</button>
-            </div>
+           
             <div className="grid lg:grid-cols-2 grid-cols-1 lg:max-xl:gap-x-5 xxl:gap-x-8  gap-y-8">
               {serviceTypeData.map((serviceType) => (
                 <div
@@ -352,6 +326,44 @@ export default function BookForm() {
                 </div>
               ))}
             </div>
+          </div> */}
+          <div>
+            <h1 className="text-[#11263c] max-xxl:text-2xl xxl:text-6xl font-semibold mb-4">
+              Service Type
+            </h1>
+            <div className="pl-2  space-x-5 rounded-2xl">
+              <button
+                className="w-20 h-10 bg-gray-300"
+                onClick={handleStandardClick}
+              >
+                Standard
+              </button>
+              <button
+                className="w-20 h-10 bg-gray-300"
+                onClick={handleDeepClick}
+              >
+                Deep
+              </button>
+            </div>
+            <label>Bedroom:<select value={bedroomValue} onChange={handleBedroomChange}>
+                <option value="">Select Bedroom</option>
+                {pricingConfig[pricingStandard]?.bedrooms.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <br />
+            <label>Bathroom:<select value={bathroomValue} onChange={handleBathroomChange}>
+                <option value="">Select Bathroom</option>
+                {availableBathrooms.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            </label>
           </div>
           {/* Extras section */}
           <div className="border-b w-full py-4 lg:p-4">
@@ -794,7 +806,7 @@ export default function BookForm() {
                         </td>
                         <td>:</td>
                         <td className="text-[#11263c] xxl:text-xl">
-                          {selectedBedrooms}
+                          {bedroomValue}
                         </td>
                       </tr>
                       <tr>
@@ -803,7 +815,7 @@ export default function BookForm() {
                         </td>
                         <td>:</td>
                         <td className="text-[#11263c] xxl:text-xl">
-                          {selectedBathrooms}
+                          {bathroomValue}
                         </td>
                       </tr>
                       <tr>
@@ -812,7 +824,7 @@ export default function BookForm() {
                         </td>
                         <td>:</td>
                         <td className="text-[#11263c] xxl:text-xl">
-                          {selectedSqft}
+                          {/* {selectedSqft} */}
                         </td>
                       </tr>
                       {selectedExtras.length > 0 && (

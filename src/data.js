@@ -347,8 +347,8 @@ export const frequencyData = [
 ];
 
 export const serviceTypeData = [
-  { id: 'bedrooms', label: 'Bedrooms', options: ['1', '2', '3', '4', '5'] },
-  { id: 'bathrooms', label: 'Bathrooms', options: ['1', '2', '3', '4', '5'] },
+  // { id: 'bedrooms', label: 'Bedrooms', options: ['1', '2', '3', '4', '5'] },
+  // { id: 'bathrooms', label: 'Bathrooms', options: ['1', '2', '3', '4', '5'] },
   { id: 'sqft', label: 'Sq Ft', options: [
     '1 - 999 Sq Ft', '1000 - 1499 Sq Ft', '1500 - 1999 Sq Ft', '2000 - 2499 Sq Ft',
     '2500 - 2999 Sq Ft', '3000 - 3499 Sq Ft', '3500 - 3999 Sq Ft', '4000 - 4499 Sq Ft',
@@ -393,22 +393,22 @@ export const pricingConfig = {
     5: { 1: 310, 2: 310, 3: 380, 4: 410, 5: 430 },
     6: { 1: 370, 2: 370, 3: 370, 4: 440, 5: 490 },
   },
-  bedrooms: 10,
-  bathrooms: 5,
-  sqft: {
-    "1 - 999 Sq Ft": 8,
-    "1000 - 1499 Sq Ft": 16,
-    "1500 - 1999 Sq Ft": 24,
-    "2000 - 2499 Sq Ft": 32,
-    "2500 - 2999 Sq Ft": 40,
-    "3000 - 3499 Sq Ft": 48,
-    "3500 - 3999 Sq Ft": 56,
-    "4000 - 4499 Sq Ft": 72,
-    "4500 - 4999 Sq Ft": 80,
-    "5000 - 5499 Sq Ft": 88,
-    "5500 - 5999 Sq Ft": 96,
-  },
-  extras: 20,
+  // bedrooms: 10,
+  // bathrooms: 5,
+  // sqft: {
+  //   "1 - 999 Sq Ft": 8,
+  //   "1000 - 1499 Sq Ft": 16,
+  //   "1500 - 1999 Sq Ft": 24,
+  //   "2000 - 2499 Sq Ft": 32,
+  //   "2500 - 2999 Sq Ft": 40,
+  //   "3000 - 3499 Sq Ft": 48,
+  //   "3500 - 3999 Sq Ft": 56,
+  //   "4000 - 4499 Sq Ft": 72,
+  //   "4500 - 4999 Sq Ft": 80,
+  //   "5000 - 5499 Sq Ft": 88,
+  //   "5500 - 5999 Sq Ft": 96,
+  // },
+  // extras: 20,
 };
 
 export const slots = [
